@@ -172,18 +172,9 @@ export default function ProgressionChart({ historyLogs, unit }: ProgressionChart
         )}
       </div>
 
-      {/* Accordion Toggle Switch Button */}
-      <button
-        type="button"
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full mt-2 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-bold tracking-wide hover:bg-slate-800/50 hover:text-white transition group"
-      >
-        <span>{isExpanded ? "Collapse Detailed Records" : "Expand Historical Data & Timeline"}</span>
-        {isExpanded ? <ChevronUp className="h-4 w-4 text-slate-400" /> : <ChevronDown className="h-4 w-4 text-slate-400" />}
-      </button>
-
-      {/* Expanded Segmented Trajectory Layout Section */}
-      {isExpanded && (
+      {/* Spreadsheet ledger */}
+      
+      
         <div className="pt-6 mt-4 border-t border-slate-800/60 space-y-6 animate-in fade-in duration-200">
           
           {/* Controls Menu with updated 'all' toggle variant */}
@@ -363,7 +354,6 @@ export default function ProgressionChart({ historyLogs, unit }: ProgressionChart
           </div>
 
         </div>
-      )}
     </div>
   )
 }
