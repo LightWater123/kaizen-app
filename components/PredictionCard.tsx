@@ -56,7 +56,7 @@ export default function PredictionCard({
         
         {isFirstSession ? (
           <div className="mt-2">
-            <span className="text-xl font-bold text-blue-400">Engine Calibrating</span>
+            <span className="text-xl font-bold text-white-400">Engine Calibrating</span>
             <p className="text-xs text-slate-400 mt-2 leading-relaxed">{message}</p>
           </div>
         ) : (
