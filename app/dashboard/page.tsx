@@ -20,10 +20,10 @@ export default async function DashboardPage() {
     redirect('/')
   }
 
-  // 2. Fetch user profile config
+  // 2. Fetch user profile config (including target_reps)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('preferred_unit, experience_level, gender, current_weight, display_name')
+    .select('preferred_unit, experience_level, gender, current_weight, display_name, target_reps')
     .eq('id', user.id)
     .single()
 
@@ -32,6 +32,7 @@ export default async function DashboardPage() {
   const gender = (profile?.gender || 'male') as 'male' | 'female'
   const currentBodyweight = profile?.current_weight || 75
   const displayName = profile?.display_name || user.email?.split('@')[0] || 'Athlete'
+  const targetReps = profile?.target_reps || 5
 
   // 3. Query historical data for the big three lifts
   const fetchLiftHistory = async (exercise: 'squat' | 'bench' | 'deadlift') => {
@@ -67,10 +68,28 @@ export default async function DashboardPage() {
 
   const historyLogs = recentHistory || []
 
-  // 6. Predict targets
-  const squatTarget = predictNextTarget({ history: squatHistory.slice(0, 4), experienceLevel, exercise: 'squat', unit })
-  const benchTarget = predictNextTarget({ history: benchHistory.slice(0, 4), experienceLevel, exercise: 'bench', unit })
-  const deadliftTarget = predictNextTarget({ history: deadliftHistory.slice(0, 4), experienceLevel, exercise: 'deadlift', unit })
+  // 6. Predict targets using custom targetReps
+  const squatTarget = predictNextTarget({ 
+    history: squatHistory.slice(0, 4), 
+    experienceLevel, 
+    exercise: 'squat', 
+    unit, 
+    targetReps 
+  })
+  const benchTarget = predictNextTarget({ 
+    history: benchHistory.slice(0, 4), 
+    experienceLevel, 
+    exercise: 'bench', 
+    unit, 
+    targetReps 
+  })
+  const deadliftTarget = predictNextTarget({ 
+    history: deadliftHistory.slice(0, 4), 
+    experienceLevel, 
+    exercise: 'deadlift', 
+    unit, 
+    targetReps 
+  })
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -79,6 +98,7 @@ export default async function DashboardPage() {
         displayName={displayName}
         preferredUnit={unit}
         experienceLevel={experienceLevel}
+        targetReps={targetReps}
       />
 
       <main className="p-4 md:p-8">
@@ -174,7 +194,7 @@ export default async function DashboardPage() {
             <TabsContainer unit={unit} historyLogs={historyLogs} />
           </div>
 
-          <AboutSection/>
+          <AboutSection />
         </div>
       </main>
     </div>

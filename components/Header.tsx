@@ -10,6 +10,7 @@ interface HeaderProps {
   displayName: string
   preferredUnit: string
   experienceLevel: string
+  targetReps: number
 }
 
 export default function Header({
@@ -17,21 +18,28 @@ export default function Header({
   displayName,
   preferredUnit,
   experienceLevel,
+  targetReps,
 }: HeaderProps) {
   const router = useRouter()
   const supabase = createClient()
 
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [name, setName] = useState(displayName)
+  const [menuView, setMenuView] = useState<'main' | 'settings'>('main')
+  const [activeModal, setActiveModal] = useState<'none' | 'name' | 'reps'>('none')
+
+  // Form states strictly for controlled modal inputs
+  const [nameInput, setNameInput] = useState(displayName)
+  const [repsInput, setRepsInput] = useState(targetReps)
   const [isUpdating, setIsUpdating] = useState(false)
+
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown on outside click
+  // Close dropdown and reset menu view on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false)
+        setMenuView('main')
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -44,10 +52,28 @@ export default function Header({
     router.refresh()
   }
 
-  const handleUpdateName = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsUpdating(true)
+  const handleCloseMenu = () => {
+    setIsMenuOpen(false)
+    setMenuView('main')
+  }
 
+  const handleOpenNameModal = () => {
+    setNameInput(displayName)
+    setActiveModal('name')
+    handleCloseMenu()
+  }
+
+  const handleOpenRepsModal = () => {
+    setRepsInput(targetReps)
+    setActiveModal('reps')
+    handleCloseMenu()
+  }
+
+  const handleUpdateProfile = async (
+    field: 'display_name' | 'target_reps',
+    value: string | number
+  ) => {
+    setIsUpdating(true)
     const {
       data: { user },
     } = await supabase.auth.getUser()
@@ -55,11 +81,10 @@ export default function Header({
     if (user) {
       await supabase
         .from('profiles')
-        .update({ display_name: name })
+        .update({ [field]: value })
         .eq('id', user.id)
 
-      setIsEditModalOpen(false)
-      setIsMenuOpen(false)
+      setActiveModal('none')
       router.refresh()
     }
     setIsUpdating(false)
@@ -97,47 +122,110 @@ export default function Header({
               <span>Unit: {preferredUnit}</span>
               <span className="text-slate-700">|</span>
               <span>Level: {experienceLevel}</span>
+              <span className="text-slate-700">|</span>
+              <span className="text-blue-400">{targetReps} Rep Target</span>
             </div>
 
-            {/* Profile Menu Trigger */}
+            {/* Profile Dropdown Trigger */}
             <div className="relative" ref={menuRef}>
               <button
                 type="button"
-                onClick={() => setIsMenuOpen((prev) => !prev)}
+                onClick={() => {
+                  setIsMenuOpen((prev) => !prev)
+                  setMenuView('main')
+                }}
                 className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-800 border border-slate-700 hover:border-slate-500 text-slate-200 focus:outline-none transition"
                 aria-label="User settings menu"
               >
                 <span className="text-xs font-bold uppercase">
-                  {name ? name.slice(0, 2) : userEmail.slice(0, 2)}
+                  {displayName ? displayName.slice(0, 2) : userEmail.slice(0, 2)}
                 </span>
               </button>
 
-              {/* Settings Dropdown */}
+              {/* Profile Dropdown Menu */}
               {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-2 z-50 text-sm">
-                  <div className="px-4 py-2 border-b border-slate-800">
-                    <p className="font-semibold text-white truncate">{name || 'Athlete'}</p>
-                    <p className="text-xs text-slate-400 truncate">{userEmail}</p>
-                  </div>
+                <div className="absolute right-0 mt-2 w-60 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-2 z-50 text-sm">
+                  
+                  {/* VIEW 1: Main Dropdown View */}
+                  {menuView === 'main' && (
+                    <div>
+                      {/* Account Summary */}
+                      <div className="px-4 py-2.5 border-b border-slate-800/80">
+                        <p className="font-bold text-white truncate">{displayName || 'Athlete'}</p>
+                        <p className="text-xs text-slate-400 truncate">{userEmail}</p>
+                      </div>
 
-                  <button
-                    onClick={() => {
-                      setIsEditModalOpen(true)
-                      setIsMenuOpen(false)
-                    }}
-                    className="w-full text-left px-4 py-2.5 text-slate-300 hover:bg-slate-800/80 transition flex items-center gap-2"
-                  >
-                    <span>Edit Profile Name</span>
-                  </button>
+                      {/* Navigation Link to Settings Submenu */}
+                      <div className="py-1">
+                        <button
+                          type="button"
+                          onClick={() => setMenuView('settings')}
+                          className="w-full text-left px-4 py-2.5 text-slate-200 hover:bg-slate-800/70 transition flex items-center justify-between group"
+                        >
+                          <div className="flex items-center gap-2">
+                            <span>⚙️</span>
+                            <span>Settings</span>
+                          </div>
+                          <span className="text-xs text-slate-500 group-hover:text-slate-300 transition">
+                            →
+                          </span>
+                        </button>
+                      </div>
 
-                  <div className="border-t border-slate-800 my-1" />
+                      {/* Sign Out Action */}
+                      <div className="border-t border-slate-800/80 pt-1">
+                        <button
+                          type="button"
+                          onClick={handleSignOut}
+                          className="w-full text-left px-4 py-2 text-rose-400 hover:bg-rose-500/10 transition font-medium"
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  )}
 
-                  <button
-                    onClick={handleSignOut}
-                    className="w-full text-left px-4 py-2.5 text-rose-400 hover:bg-rose-500/10 transition flex items-center gap-2"
-                  >
-                    <span>Sign Out</span>
-                  </button>
+                  {/* VIEW 2: Nested Settings Submenu */}
+                  {menuView === 'settings' && (
+                    <div>
+                      {/* Settings Header with Back Button */}
+                      <div className="px-3 py-2 border-b border-slate-800/80 flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setMenuView('main')}
+                          className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition text-xs flex items-center gap-1 font-semibold"
+                        >
+                          <span>←</span>
+                          <span>Back</span>
+                        </button>
+                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                          Settings
+                        </span>
+                      </div>
+
+                      {/* Settings Options */}
+                      <div className="py-1">
+                        <button
+                          type="button"
+                          onClick={handleOpenNameModal}
+                          className="w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-800/70 transition flex items-center justify-between"
+                        >
+                          <span>Edit Profile Name</span>
+                          <span className="text-xs text-slate-500 font-mono">✎</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={handleOpenRepsModal}
+                          className="w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-800/70 transition flex items-center justify-between"
+                        >
+                          <span>Edit Target Reps</span>
+                          <span className="text-xs font-bold text-blue-400">{targetReps} reps</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                 </div>
               )}
             </div>
@@ -145,21 +233,26 @@ export default function Header({
         </div>
       </header>
 
-      {/* Edit Profile Modal */}
-      {isEditModalOpen && (
+      {/* Edit Profile Name Modal */}
+      {activeModal === 'name' && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm space-y-4">
             <h3 className="text-lg font-bold text-white">Edit Profile Name</h3>
-            <form onSubmit={handleUpdateName} className="space-y-4">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleUpdateProfile('display_name', nameInput)
+              }}
+              className="space-y-4"
+            >
               <div>
                 <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
                   Display Name
                 </label>
                 <input
                   type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter name"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
                   className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-slate-600"
                   required
                 />
@@ -168,7 +261,7 @@ export default function Header({
               <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setIsEditModalOpen(false)}
+                  onClick={() => setActiveModal('none')}
                   className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition"
                 >
                   Cancel
@@ -185,6 +278,60 @@ export default function Header({
           </div>
         </div>
       )}
+
+      {/* Edit Target Reps Modal */}
+      {activeModal === 'reps' && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm space-y-4">
+            <div>
+              <h3 className="text-lg font-bold text-white">Edit Target Reps</h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Progression loads will calculate your working sets relative to this rep goal.
+              </p>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleUpdateProfile('target_reps', Number(repsInput))
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+                  Target Reps (1 - 12)
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  max={12}
+                  value={repsInput}
+                  onChange={(e) => setRepsInput(Math.max(1, Math.min(12, Number(e.target.value))))}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-bold"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setActiveModal('none')}
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition disabled:opacity-50"
+                >
+                  {isUpdating ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   )
-}   
+}

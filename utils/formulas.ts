@@ -17,9 +17,16 @@ interface PredictNextTargetConfig {
   experienceLevel: ExperienceLevel;
   exercise: 'squat' | 'bench' | 'deadlift';
   unit: PreferredUnit;
+  targetReps?: number;
 }
 
-export function predictNextTarget({ history, experienceLevel, exercise, unit }: PredictNextTargetConfig) {
+export function predictNextTarget({ 
+  history, 
+  experienceLevel, 
+  exercise, 
+  unit, 
+  targetReps = 5 }: 
+  PredictNextTargetConfig) {
   // 1. Cold Start Check
   if (!history || history.length === 0) {
     return {
@@ -74,7 +81,6 @@ export function predictNextTarget({ history, experienceLevel, exercise, unit }: 
     e1RMEffectiveTarget += (unit === 'lbs' ? 10 : 5); 
   }
 
-  const targetReps = 5; 
   const rawPredictedWeight = e1RMEffectiveTarget / (1 + targetReps / 30);
   const roundIncrement = unit === 'lbs' ? 5 : 2.5;
   let finalPredictedWeight = Math.round(rawPredictedWeight / roundIncrement) * roundIncrement;
