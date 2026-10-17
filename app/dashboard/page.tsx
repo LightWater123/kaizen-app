@@ -92,7 +92,7 @@ export default async function DashboardPage() {
   })
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50 transition-colors duration-200">
       <Header
         userEmail={user.email ?? ''}
         displayName={displayName}
@@ -102,7 +102,7 @@ export default async function DashboardPage() {
       />
 
       <main className="p-4 md:p-8">
-        <div className="max-w-5xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto space-y-8">
           
           {/* Actionable Prediction Cards Grid Layout */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

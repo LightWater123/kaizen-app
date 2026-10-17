@@ -39,7 +39,7 @@ export default function RelativePerformanceCard({
   const tier = getScoreTier(dotsScore, gender);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl text-white">
+    <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-white/10 rounded-2xl p-6 shadow-sm text-zinc-900 dark:text-zinc-50 transition-colors">
       <div className="flex justify-between items-center border-b border-slate-800/60 pb-4 mb-4">
         <div className="flex items-center gap-2">
           <div>
@@ -106,14 +106,16 @@ export default function RelativePerformanceCard({
       </div>
 
       <div className="flex items-baseline gap-2">
-        <span className="text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">
+        <span className="text-5xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50">
           {dotsScore}
         </span>
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">DOTS Points</span>
+        <span className="text-xs font-bold text-amber-700 bg-amber-500/10 border border-amber-500/20 dark:text-amber-400 px-2 py-0.5 rounded-md uppercase tracking-widest">
+          DOTS Points
+        </span>
       </div>
 
       {/* RATING CLASSIFICATION BAR WITH NEW SCORE TIER TOOLTIP */}
-      <div className="mt-4 p-3 bg-slate-950 border border-slate-800/80 rounded-xl flex items-center justify-between">
+      <div className="mt-4 p-3 bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 rounded-xl flex items-center justify-between">
         <div className="flex items-center gap-1.5">
           <span className="text-xs text-slate-400 font-medium">Coached Rating Classification:</span>
           

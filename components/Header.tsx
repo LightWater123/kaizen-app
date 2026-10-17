@@ -27,14 +27,12 @@ export default function Header({
   const [menuView, setMenuView] = useState<'main' | 'settings'>('main')
   const [activeModal, setActiveModal] = useState<'none' | 'name' | 'reps'>('none')
 
-  // Form states strictly for controlled modal inputs
   const [nameInput, setNameInput] = useState(displayName)
   const [repsInput, setRepsInput] = useState(targetReps)
   const [isUpdating, setIsUpdating] = useState(false)
 
   const menuRef = useRef<HTMLDivElement>(null)
 
-  // Close dropdown and reset menu view on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -92,152 +90,151 @@ export default function Header({
 
   return (
     <>
-      <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
-        <div className="max-w-5xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
-          
-          {/* Logo & Navigation */}
-          <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <span className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-sm">
-                KZ
-              </span>
-              <span className="font-black text-lg tracking-wider text-white">
-                KAIZEN
-              </span>
-            </Link>
-
-            <nav className="hidden sm:flex items-center gap-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
-              <Link href="#analytics" className="hover:text-white transition">
-                Ledger & Chart
-              </Link>
-              <Link href="#about" className="hover:text-white transition">
-                About
-              </Link>
-            </nav>
-          </div>
-
-          {/* Quick Metrics & User Profile */}
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-3 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wider text-slate-400 uppercase">
-              <span>Unit: {preferredUnit}</span>
-              <span className="text-slate-700">|</span>
-              <span>Level: {experienceLevel}</span>
-              <span className="text-slate-700">|</span>
-              <span className="text-blue-400">{targetReps} Rep Target</span>
-            </div>
-
-            {/* Profile Dropdown Trigger */}
-            <div className="relative" ref={menuRef}>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsMenuOpen((prev) => !prev)
-                  setMenuView('main')
-                }}
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-800 border border-slate-700 hover:border-slate-500 text-slate-200 focus:outline-none transition"
-                aria-label="User settings menu"
-              >
-                <span className="text-xs font-bold uppercase">
-                  {displayName ? displayName.slice(0, 2) : userEmail.slice(0, 2)}
+      {/* Frosted Glass Header */}
+      <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 bg-zinc-50/75 backdrop-blur-md backdrop-saturate-150 transition-colors duration-200 dark:border-white/10 dark:bg-zinc-950/70">
+        <div className="px-4 md:px-8">
+          <div className="max-w-6xl mx-auto h-16 flex items-center justify-between">
+            
+            {/* Logo & Navigation */}
+            <div className="flex items-center gap-6">
+              <Link href="/dashboard" className="flex items-center gap-2.5 group">
+                <span className="h-8 w-8 rounded-lg bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center font-black text-xs tracking-wider shadow-sm transition">
+                  KZ
                 </span>
-              </button>
+                <span className="font-black text-lg tracking-wider text-zinc-900 dark:text-zinc-100">
+                  KAIZEN
+                </span>
+              </Link>
 
-              {/* Profile Dropdown Menu */}
-              {isMenuOpen && (
-                <div className="absolute right-0 mt-2 w-60 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-2 z-50 text-sm">
-                  
-                  {/* VIEW 1: Main Dropdown View */}
-                  {menuView === 'main' && (
-                    <div>
-                      {/* Account Summary */}
-                      <div className="px-4 py-2.5 border-b border-slate-800/80">
-                        <p className="font-bold text-white truncate">{displayName || 'Athlete'}</p>
-                        <p className="text-xs text-slate-400 truncate">{userEmail}</p>
-                      </div>
-
-                      {/* Navigation Link to Settings Submenu */}
-                      <div className="py-1">
-                        <button
-                          type="button"
-                          onClick={() => setMenuView('settings')}
-                          className="w-full text-left px-4 py-2.5 text-slate-200 hover:bg-slate-800/70 transition flex items-center justify-between group"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span>⚙️</span>
-                            <span>Settings</span>
-                          </div>
-                          <span className="text-xs text-slate-500 group-hover:text-slate-300 transition">
-                            →
-                          </span>
-                        </button>
-                      </div>
-
-                      {/* Sign Out Action */}
-                      <div className="border-t border-slate-800/80 pt-1">
-                        <button
-                          type="button"
-                          onClick={handleSignOut}
-                          className="w-full text-left px-4 py-2 text-rose-400 hover:bg-rose-500/10 transition font-medium"
-                        >
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* VIEW 2: Nested Settings Submenu */}
-                  {menuView === 'settings' && (
-                    <div>
-                      {/* Settings Header with Back Button */}
-                      <div className="px-3 py-2 border-b border-slate-800/80 flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setMenuView('main')}
-                          className="p-1 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition text-xs flex items-center gap-1 font-semibold"
-                        >
-                          <span>←</span>
-                          <span>Back</span>
-                        </button>
-                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                          Settings
-                        </span>
-                      </div>
-
-                      {/* Settings Options */}
-                      <div className="py-1">
-                        <button
-                          type="button"
-                          onClick={handleOpenNameModal}
-                          className="w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-800/70 transition flex items-center justify-between"
-                        >
-                          <span>Edit Profile Name</span>
-                          <span className="text-xs text-slate-500 font-mono">✎</span>
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={handleOpenRepsModal}
-                          className="w-full text-left px-4 py-2 text-slate-300 hover:bg-slate-800/70 transition flex items-center justify-between"
-                        >
-                          <span>Edit Target Reps</span>
-                          <span className="text-xs font-bold text-blue-400">{targetReps} reps</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              )}
+              <nav className="hidden sm:flex items-center gap-5 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                <Link href="#analytics" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition">
+                  Ledger & Chart
+                </Link>
+                <Link href="#about" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition">
+                  About
+                </Link>
+              </nav>
             </div>
+
+            {/* Quick Metrics & User Profile */}
+            <div className="flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-3 bg-white/70 dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-white/10 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wider text-zinc-600 dark:text-zinc-400 uppercase shadow-sm">
+                <span>Unit: {preferredUnit}</span>
+                <span className="text-zinc-300 dark:text-zinc-700">|</span>
+                <span>Level: {experienceLevel}</span>
+                <span className="text-zinc-300 dark:text-zinc-700">|</span>
+                <span className="text-amber-600 dark:text-amber-400 font-bold">{targetReps} Rep Target</span>
+              </div>
+
+              {/* Profile Dropdown Trigger */}
+              <div className="relative" ref={menuRef}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMenuOpen((prev) => !prev)
+                    setMenuView('main')
+                  }}
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 hover:border-zinc-400 dark:hover:border-zinc-600 text-zinc-800 dark:text-zinc-200 focus:outline-none transition shadow-sm"
+                  aria-label="User settings menu"
+                >
+                  <span className="text-xs font-bold uppercase">
+                    {displayName ? displayName.slice(0, 2) : userEmail.slice(0, 2)}
+                  </span>
+                </button>
+
+                {/* Profile Dropdown Menu */}
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl py-2 z-50 text-sm">
+                    
+                    {/* VIEW 1: Main Dropdown */}
+                    {menuView === 'main' && (
+                      <div>
+                        <div className="px-4 py-2.5 border-b border-zinc-100 dark:border-zinc-800">
+                          <p className="font-bold text-zinc-900 dark:text-zinc-100 truncate">{displayName || 'Athlete'}</p>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{userEmail}</p>
+                        </div>
+
+                        <div className="py-1">
+                          <button
+                            type="button"
+                            onClick={() => setMenuView('settings')}
+                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between group"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span>⚙️</span>
+                              <span>Settings</span>
+                            </div>
+                            <span className="text-xs text-zinc-400 group-hover:text-zinc-600 dark:group-hover:text-zinc-200 transition">
+                              →
+                            </span>
+                          </button>
+                        </div>
+
+                        <div className="border-t border-zinc-100 dark:border-zinc-800 pt-1">
+                          <button
+                            type="button"
+                            onClick={handleSignOut}
+                            className="w-full text-left px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition font-medium"
+                          >
+                            Sign Out
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* VIEW 2: Settings Submenu */}
+                    {menuView === 'settings' && (
+                      <div>
+                        <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setMenuView('main')}
+                            className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-xs flex items-center gap-1 font-semibold"
+                          >
+                            <span>←</span>
+                            <span>Back</span>
+                          </button>
+                          <span className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
+                            Settings
+                          </span>
+                        </div>
+
+                        <div className="py-1">
+                          <button
+                            type="button"
+                            onClick={handleOpenNameModal}
+                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between"
+                          >
+                            <span>Edit Profile Name</span>
+                            <span className="text-xs text-zinc-400 font-mono">✎</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={handleOpenRepsModal}
+                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between"
+                          >
+                            <span>Edit Target Reps</span>
+                            <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{targetReps} reps</span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                  </div>
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
       </header>
 
       {/* Edit Profile Name Modal */}
       {activeModal === 'name' && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm space-y-4">
-            <h3 className="text-lg font-bold text-white">Edit Profile Name</h3>
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
+            <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Edit Profile Name</h3>
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -246,14 +243,14 @@ export default function Header({
               className="space-y-4"
             >
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">
                   Display Name
                 </label>
                 <input
                   type="text"
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-slate-600"
+                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-500 dark:focus:border-zinc-600"
                   required
                 />
               </div>
@@ -262,14 +259,14 @@ export default function Header({
                 <button
                   type="button"
                   onClick={() => setActiveModal('none')}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition"
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-950 rounded-xl transition disabled:opacity-50"
                 >
                   {isUpdating ? 'Saving...' : 'Save'}
                 </button>
@@ -281,11 +278,11 @@ export default function Header({
 
       {/* Edit Target Reps Modal */}
       {activeModal === 'reps' && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 w-full max-w-sm space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
             <div>
-              <h3 className="text-lg font-bold text-white">Edit Target Reps</h3>
-              <p className="text-xs text-slate-400 mt-1">
+              <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Edit Target Reps</h3>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
                 Progression loads will calculate your working sets relative to this rep goal.
               </p>
             </div>
@@ -298,7 +295,7 @@ export default function Header({
               className="space-y-4"
             >
               <div>
-                <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">
+                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block mb-1">
                   Target Reps (1 - 12)
                 </label>
                 <input
@@ -307,7 +304,7 @@ export default function Header({
                   max={12}
                   value={repsInput}
                   onChange={(e) => setRepsInput(Math.max(1, Math.min(12, Number(e.target.value))))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 font-bold"
+                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-amber-500 font-bold"
                   required
                 />
               </div>
@@ -316,14 +313,14 @@ export default function Header({
                 <button
                   type="button"
                   onClick={() => setActiveModal('none')}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-white transition"
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-blue-600 hover:bg-blue-500 text-white rounded-xl transition disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-amber-600 hover:bg-amber-500 text-white rounded-xl transition disabled:opacity-50"
                 >
                   {isUpdating ? 'Saving...' : 'Save'}
                 </button>

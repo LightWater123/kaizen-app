@@ -22,45 +22,40 @@ export default function TabsContainer({ unit, historyLogs }: TabsContainerProps)
   const [activeTab, setActiveTab] = useState<'log' | 'history'>('log')
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-xl max-w-xl mx-auto">
+    <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-sm max-w-xl mx-auto w-full transition-colors">
+
       {/* Tab Toggles */}
-      <div className="flex border-b border-slate-800 mb-6">
+      <div className="flex border-b border-zinc-200 dark:border-zinc-800 mb-6">
         <button
           onClick={() => setActiveTab('log')}
           className={`pb-3 text-sm font-bold tracking-wider uppercase border-b-2 px-4 transition ${
             activeTab === 'log' 
-              ? 'border-blue-500 text-blue-400' 
-              : 'border-transparent text-slate-500 hover:text-slate-400'
+              ? 'border-zinc-900 text-zinc-900 dark:border-zinc-100 dark:text-zinc-100' 
+              : 'border-transparent text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300'
           }`}
         >
           Log Session
         </button>
-        {/* <button
-          onClick={() => setActiveTab('history')}
-          className={`pb-3 text-sm font-bold tracking-wider uppercase border-b-2 px-4 transition ${
-            activeTab === 'history' 
-              ? 'border-blue-500 text-blue-400' 
-              : 'border-transparent text-slate-500 hover:text-slate-400'
-          }`}
-        >
-          History Logs ({historyLogs.length})
-        </button> */}
+        
       </div>
 
+      {/* Tab Content Conditional Rendering */}
       {/* Tab Content Conditional Rendering */}
       {activeTab === 'log' ? (
         <div>
           <div className="mb-4">
-            <p className="text-slate-400 text-xs">
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs">
               Instantly save your heaviest training set to regulate next session&apos;s predictions.
             </p>
           </div>
           <LoggingForm unit={unit} />
         </div>
       ) : (
-        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1 scrollbar-thin">
+        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
           {historyLogs.length === 0 ? (
-            <p className="text-center text-sm text-slate-500 py-8">No training history found. Log a set to calibrate!</p>
+            <p className="text-center text-sm text-zinc-400 dark:text-zinc-500 py-8">
+              No training history found. Log a set to calibrate!
+            </p>
           ) : (
             historyLogs.map((log) => {
               const formattedDate = new Date(log.logged_at).toLocaleDateString('en-US', {
@@ -70,26 +65,26 @@ export default function TabsContainer({ unit, historyLogs }: TabsContainerProps)
               })
 
               return (
-                <div key={log.id} className="p-4 bg-slate-950 border border-slate-800/60 rounded-xl space-y-2">
+                <div key={log.id} className="p-4 bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-xs font-black uppercase tracking-wider text-blue-400 bg-blue-950/40 px-2 py-0.5 rounded border border-blue-900/30">
+                    <span className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 bg-zinc-200/70 dark:bg-zinc-800 px-2 py-0.5 rounded">
                       {log.exercise === 'bench' ? 'Bench Press' : log.exercise}
                     </span>
-                    <span className="text-[11px] font-medium text-slate-500">{formattedDate}</span>
+                    <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500">{formattedDate}</span>
                   </div>
 
                   <div className="flex items-baseline gap-1">
-                    <span className="text-lg font-bold text-white">{log.weight}{unit}</span>
-                    <span className="text-xs text-slate-600 px-1">×</span>
-                    <span className="text-md font-semibold text-slate-300">{log.reps} reps</span>
-                    <span className="ml-auto text-xs font-bold text-amber-500/90 bg-amber-500/10 px-2 py-0.5 rounded">
+                    <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{log.weight}{unit}</span>
+                    <span className="text-xs text-zinc-400 px-1">×</span>
+                    <span className="text-md font-semibold text-zinc-700 dark:text-zinc-300">{log.reps} reps</span>
+                    <span className="ml-auto text-xs font-bold text-amber-700 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
                       RPE {log.rpe}
                     </span>
                   </div>
 
                   {log.notes && (
-                    <div className="text-xs text-slate-400 border-t border-slate-800/50 pt-2 mt-1 italic">
-                      &quot; {log.notes} &quot;
+                    <div className="text-xs text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800/80 pt-2 mt-1 italic">
+                      &quot;{log.notes}&quot;
                     </div>
                   )}
                 </div>

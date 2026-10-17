@@ -9,19 +9,13 @@ interface LoggingFormProps {
 
 export default function LoggingForm({ unit }: LoggingFormProps) {
   const [rpe, setRpe] = useState('8')
-  // NEW: Added local state tracking to hold server validation reject messages
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  
-  // Safely initialize today's local date string to set constraints
   const [today] = useState(() => new Date().toISOString().split('T')[0])
 
-  // Native Next.js hook automatically tracks action completion and resets state
   const [, formAction, isSubmitting] = useActionState(async (prevState: unknown, formData: FormData) => {
-    setErrorMessage(null) // Reset banner display on every fresh click frame
+    setErrorMessage(null)
     try {
       const result = await logLift(formData)
-      
-      // NEW: Intercept the structured action return parameter instead of crashing
       if (result && !result.success) {
         setErrorMessage(result.error)
       }
@@ -31,129 +25,169 @@ export default function LoggingForm({ unit }: LoggingFormProps) {
     }
   }, null)
 
+  // Standard input appearance classes
+  const inputBaseClasses = 
+    "w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-amber-500/80 focus:ring-1 focus:ring-amber-500/80 text-sm transition font-medium"
+
   return (
-    // Replaced action and removed manual onSubmit handler
-    <form action={formAction} className="space-y-4 text-white">
-      
-      {/* NEW: DYNAMIC ERROR WARNING BANNER ROW */}
-      {errorMessage && (
-        <div className="p-3 text-xs bg-red-950/40 border border-red-500/20 text-red-400 rounded-xl animate-in fade-in slide-in-from-top-2 duration-200 font-medium leading-relaxed">
-          ⚠️ {errorMessage}
-        </div>
-      )}
+    <>
+      {/* Scoped CSS for the Amber Range Slider thumb */}
+      <style jsx>{`
+        input[type='range']::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 18px;
+          width: 18px;
+          border-radius: 9999px;
+          background: #f59e0b; /* Amber 500 */
+          cursor: pointer;
+          border: 2px solid #18181b;
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+          transition: transform 0.1s ease;
+        }
+        input[type='range']::-webkit-slider-thumb:hover {
+          transform: scale(1.15);
+        }
+        input[type='range']::-moz-range-thumb {
+          height: 18px;
+          width: 18px;
+          border-radius: 9999px;
+          background: #f59e0b;
+          cursor: pointer;
+          border: 2px solid #18181b;
+          box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+        }
+      `}</style>
 
-      {/* Exercise Dropdown Selection Menu */}
-      <div>
-        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-          Exercise
-        </label>
-        <select 
-          name="exercise" 
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-          required
+      <form action={formAction} className="space-y-4 text-zinc-100">
+        
+        {/* Error banner */}
+        {errorMessage && (
+          <div className="p-3 text-xs bg-rose-950/40 border border-rose-900/50 text-rose-300 rounded-xl font-medium leading-relaxed">
+            ⚠️ {errorMessage}
+          </div>
+        )}
+
+        {/* Exercise Dropdown */}
+        <div>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+            Exercise
+          </label>
+          <div className="relative">
+            <select 
+              name="exercise" 
+              className={`${inputBaseClasses} cursor-pointer appearance-none pr-10`}
+              required
+            >
+              <option value="squat" className="bg-zinc-900 text-zinc-100">Squat</option>
+              <option value="bench" className="bg-zinc-900 text-zinc-100">Bench Press</option>
+              <option value="deadlift" className="bg-zinc-900 text-zinc-100">Deadlift</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-zinc-400">
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {/* Weight Working Input */}
+          <div>
+            <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+              Weight ({unit})
+            </label>
+            <input
+              type="number"
+              name="weight"
+              step={unit === 'lbs' ? '5' : '2.5'}
+              placeholder={unit === 'lbs' ? '225' : '100'}
+              className={inputBaseClasses}
+              required
+            />
+          </div>
+
+          {/* Reps Working Input */}
+          <div>
+            <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+              Reps
+            </label>
+            <input
+              type="number"
+              name="reps"
+              placeholder="5"
+              className={inputBaseClasses}
+              required
+            />
+          </div>
+        </div>
+
+        {/* RPE Selector Track Slider */}
+        <div className="pt-1">
+          <div className="flex justify-between text-xs font-semibold uppercase tracking-wider mb-2">
+            <span className="text-zinc-400">RPE</span>
+            <span className="text-amber-400 font-bold tracking-normal">RPE {rpe}</span>
+          </div>
+          
+          <input type="hidden" name="rpe" value={rpe} />
+          
+          <input
+            type="range"
+            min="6"
+            max="10"
+            step="0.5"
+            value={rpe}
+            onChange={(e) => setRpe(e.target.value)}
+            className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer outline-none transition"
+          />
+          
+          <div className="flex justify-between text-[11px] text-zinc-500 px-0.5 mt-2 font-medium">
+            <span>6 (Light)</span>
+            <span className="text-zinc-400">8 (Target)</span>
+            <span>10 (Max Effort)</span>
+          </div>
+        </div>
+
+        {/* Optional Training Notes */}
+        <div>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+            Training Notes (Optional)
+          </label>
+          <input
+            type="text"
+            name="notes"
+            placeholder="Mover felt smooth, focus on leg drive"
+            className={inputBaseClasses}
+          />
+        </div>
+
+        {/* Calendar Date Picker */}
+        <div>
+          <label className="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5">
+            Training Date Calibration
+          </label>
+          <input
+            type="date"
+            name="logged_at"
+            defaultValue={today}
+            max={today}
+            className={`${inputBaseClasses} cursor-pointer [color-scheme:dark]`}
+            required
+          />
+          <p className="text-[11px] text-zinc-500 mt-1.5">
+            Forget to track a workout? Use this selector to backdate older training sessions.
+          </p>
+        </div>
+
+        {/* Primary Action Button */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-3.5 rounded-xl text-sm shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 active:shadow-md disabled:opacity-50 transition-all duration-150 ease-out cursor-pointer mt-4"
         >
-          <option value="squat">Squat</option>
-          <option value="bench">Bench Press</option>
-          <option value="deadlift">Deadlift</option>
-        </select>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        {/* Weight Working Input */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-            Weight ({unit})
-          </label>
-          <input
-            type="number"
-            name="weight"
-            step={unit === 'lbs' ? '5' : '2.5'}
-            placeholder={unit === 'lbs' ? '225' : '100'}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            required
-          />
-        </div>
-
-        {/* Reps Working Input */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-            Reps
-          </label>
-          <input
-            type="number"
-            name="reps"
-            placeholder="5"
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            required
-          />
-        </div>
-      </div>
-
-      {/* RPE Selector Track Slider */}
-      <div>
-        <div className="flex justify-between text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-          <span>RPE</span>
-          <span className="text-blue-400 font-bold">RPE {rpe}</span>
-        </div>
-        
-        {/* HIDDEN BACKUP INPUT: This guarantees the server always receives a value */}
-        <input type="hidden" name="rpe" value={rpe} />
-        
-        <input
-          type="range"
-          min="6"
-          max="10"
-          step="0.5"
-          value={rpe}
-          onChange={(e) => setRpe(e.target.value)}
-          className="w-full h-2 bg-slate-950 border border-slate-800 rounded-lg appearance-none cursor-pointer accent-blue-500"
-        />
-        
-        <div className="flex justify-between text-[10px] text-slate-600 px-1 mt-1 font-bold">
-          <span>6 (Light)</span>
-          <span>8 (Target)</span>
-          <span>10 (Max Effort)</span>
-        </div>
-      </div>
-
-      {/* Optional Training Notes */}
-      <div>
-        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-          Training Notes (Optional)
-        </label>
-        <input
-          type="text"
-          name="notes"
-          placeholder="Mover felt smooth, focus on leg drive"
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-        />
-      </div>
-
-      {/* Calendar Date Picker Integration */}
-      <div>
-        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">
-          Training Date Calibration
-        </label>
-        <input
-          type="date"
-          name="logged_at"
-          defaultValue={today}
-          max={today}
-          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm scheme-dark cursor-pointer font-medium"
-          required
-        />
-        <p className="text-[10px] text-slate-500 mt-1">
-          Forget to track a workout? Use this selector to backdate older training sessions.
-        </p>
-      </div>
-
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full bg-blue-6z00 hover:bg-blue-500 font-semibold py-3 rounded-xl transition text-sm shadow-lg shadow-blue-600/10 mt-2 disabled:opacity-50"
-      >
-        {isSubmitting ? 'Saving Performance...' : 'Log Top Set'}
-      </button>
-    </form>
+          {isSubmitting ? 'Saving Performance...' : 'Log Top Set'}
+        </button>
+      </form>
+    </>
   )
 }

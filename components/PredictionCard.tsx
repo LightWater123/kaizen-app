@@ -30,15 +30,13 @@ export default function PredictionCard({
   const plates = targetWeight ? calculatePlates(targetWeight, unit) : null;
 
   // Change card colors conditionally depending on engine status
-  const cardBorderColor = isFirstSession 
-    ? 'border-slate-800' 
-    : isDeload 
-      ? 'border-amber-500/70 bg-amber-950/10' 
-      : 'border-slate-800';
+  const cardBorderColor = isDeload 
+    ? 'border-amber-500/40 bg-amber-50/50 dark:bg-amber-950/10 dark:border-amber-500/30' 
+    : 'border-zinc-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/60';
 
   const badgeStyles = isDeload 
-    ? 'text-amber-400 font-bold' 
-    : 'text-emerald-400 font-medium';
+    ? 'text-amber-700 dark:text-amber-400 font-semibold' 
+    : 'text-zinc-600 dark:text-zinc-300 font-medium';
 
   return (
     <div className={`border rounded-2xl p-6 shadow-xl text-white flex flex-col justify-between transition-all duration-300 ${cardBorderColor} ${isDeload ? 'bg-slate-900/40' : 'bg-slate-900'}`}>
@@ -62,12 +60,12 @@ export default function PredictionCard({
         ) : (
           <div className="mt-2">
             <div>
-              <span className="text-5xl font-black tracking-tight text-white">
+              <span className="text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
                 {targetWeight}
                 <span className="text-xl font-normal text-slate-500 ml-1">{unit}</span>
               </span>
               <span className="mx-3 text-3xl font-light text-slate-700">×</span>
-              <span className="text-4xl font-extrabold text-blue-500">
+              <span className="text-4xl font-extrabold text-amber-600 dark:text-amber-400">
                 {targetReps}
                 <span className="text-sm font-normal text-slate-500 ml-0.5"> reps</span>
               </span>
