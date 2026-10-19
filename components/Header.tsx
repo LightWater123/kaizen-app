@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
+import { Flame } from 'lucide-react'
 
 interface HeaderProps {
   userEmail: string
@@ -33,6 +34,7 @@ export default function Header({
 
   const menuRef = useRef<HTMLDivElement>(null)
 
+  // Click-Outside Dropdown Dismissal
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -43,6 +45,15 @@ export default function Header({
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // Smooth Scroll Click Handler
+  const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault()
+    const element = document.getElementById(id)
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
@@ -98,7 +109,7 @@ export default function Header({
             {/* Logo & Navigation */}
             <div className="flex items-center gap-6">
               <Link href="/dashboard" className="flex items-center gap-2.5 group">
-                <span className="h-8 w-8 rounded-lg bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center font-black text-xs tracking-wider shadow-sm transition">
+                <span className="h-8 w-8 rounded-lg bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center font-black text-xs tracking-wider shadow-sm transition group-hover:scale-105">
                   KZ
                 </span>
                 <span className="font-black text-lg tracking-wider text-zinc-900 dark:text-zinc-100">
@@ -107,17 +118,33 @@ export default function Header({
               </Link>
 
               <nav className="hidden sm:flex items-center gap-5 text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
-                <Link href="#analytics" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition">
-                  Ledger & Chart
-                </Link>
-                <Link href="#about" className="hover:text-zinc-900 dark:hover:text-zinc-100 transition">
+                <a 
+                  href="#analytics" 
+                  onClick={(e) => handleScrollTo(e, 'analytics')}
+                  className="hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer"
+                >
+                  Performance & Analytics
+                </a>
+                <a 
+                  href="#about" 
+                  onClick={(e) => handleScrollTo(e, 'about')}
+                  className="hover:text-zinc-900 dark:hover:text-zinc-100 transition cursor-pointer"
+                >
                   About
-                </Link>
+                </a>
               </nav>
             </div>
 
-            {/* Quick Metrics & User Profile */}
+            {/* Quick Metrics & Profile Dropdown */}
             <div className="flex items-center gap-3">
+              
+              {/* Active Streak Badge */}
+              <div className="hidden lg:flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-400">
+                <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                <span>Strength Phase</span>
+              </div>
+
+              {/* Metrics Pill */}
               <div className="hidden md:flex items-center gap-3 bg-white/70 dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-white/10 px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wider text-zinc-600 dark:text-zinc-400 uppercase shadow-sm">
                 <span>Unit: {preferredUnit}</span>
                 <span className="text-zinc-300 dark:text-zinc-700">|</span>
@@ -134,7 +161,7 @@ export default function Header({
                     setIsMenuOpen((prev) => !prev)
                     setMenuView('main')
                   }}
-                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 hover:border-zinc-400 dark:hover:border-zinc-600 text-zinc-800 dark:text-zinc-200 focus:outline-none transition shadow-sm"
+                  className="flex items-center justify-center w-9 h-9 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 hover:border-zinc-400 dark:hover:border-zinc-600 text-zinc-800 dark:text-zinc-200 focus:outline-none transition shadow-sm cursor-pointer"
                   aria-label="User settings menu"
                 >
                   <span className="text-xs font-bold uppercase">
@@ -144,7 +171,7 @@ export default function Header({
 
                 {/* Profile Dropdown Menu */}
                 {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl py-2 z-50 text-sm">
+                  <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl py-2 z-50 text-sm animate-in fade-in zoom-in-95 duration-150">
                     
                     {/* VIEW 1: Main Dropdown */}
                     {menuView === 'main' && (
@@ -158,7 +185,7 @@ export default function Header({
                           <button
                             type="button"
                             onClick={() => setMenuView('settings')}
-                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between group"
+                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between group cursor-pointer"
                           >
                             <div className="flex items-center gap-2">
                               <span>⚙️</span>
@@ -174,7 +201,7 @@ export default function Header({
                           <button
                             type="button"
                             onClick={handleSignOut}
-                            className="w-full text-left px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition font-medium"
+                            className="w-full text-left px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition font-medium cursor-pointer"
                           >
                             Sign Out
                           </button>
@@ -189,7 +216,7 @@ export default function Header({
                           <button
                             type="button"
                             onClick={() => setMenuView('main')}
-                            className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-xs flex items-center gap-1 font-semibold"
+                            className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition text-xs flex items-center gap-1 font-semibold cursor-pointer"
                           >
                             <span>←</span>
                             <span>Back</span>
@@ -203,7 +230,7 @@ export default function Header({
                           <button
                             type="button"
                             onClick={handleOpenNameModal}
-                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between"
+                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between cursor-pointer"
                           >
                             <span>Edit Profile Name</span>
                             <span className="text-xs text-zinc-400 font-mono">✎</span>
@@ -212,7 +239,7 @@ export default function Header({
                           <button
                             type="button"
                             onClick={handleOpenRepsModal}
-                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between"
+                            className="w-full text-left px-4 py-2 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800/70 transition flex items-center justify-between cursor-pointer"
                           >
                             <span>Edit Target Reps</span>
                             <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{targetReps} reps</span>
@@ -250,7 +277,7 @@ export default function Header({
                   type="text"
                   value={nameInput}
                   onChange={(e) => setNameInput(e.target.value)}
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-500 dark:focus:border-zinc-600"
+                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
@@ -259,14 +286,14 @@ export default function Header({
                 <button
                   type="button"
                   onClick={() => setActiveModal('none')}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition"
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-950 rounded-xl transition disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:hover:bg-zinc-200 dark:text-zinc-950 rounded-xl transition disabled:opacity-50 cursor-pointer"
                 >
                   {isUpdating ? 'Saving...' : 'Save'}
                 </button>
@@ -313,14 +340,14 @@ export default function Header({
                 <button
                   type="button"
                   onClick={() => setActiveModal('none')}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition"
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUpdating}
-                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-amber-600 hover:bg-amber-500 text-white rounded-xl transition disabled:opacity-50"
+                  className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-amber-600 hover:bg-amber-500 text-white rounded-xl transition disabled:opacity-50 cursor-pointer"
                 >
                   {isUpdating ? 'Saving...' : 'Save'}
                 </button>
