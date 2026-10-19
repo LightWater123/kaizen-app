@@ -21,26 +21,24 @@ export default function RelativePerformanceCard({
 
   // Updated Classification Engine matching your exact benchmarks
   const getScoreTier = (score: number, userGender: 'male' | 'female') => {
-    if (userGender === 'male') {
-      if (score >= 500) return { title: 'Elite / National', color: 'text-purple-400 border-purple-500/30 bg-purple-500/5' };
-      if (score >= 400) return { title: 'Excellent / Regional', color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5' };
-      if (score >= 300) return { title: 'Advanced / Competitive', color: 'text-teal-400 border-teal-500/30 bg-teal-500/5' };
-      if (score >= 200) return { title: 'Intermediate', color: 'text-blue-400 border-blue-500/30 bg-blue-500/5' };
-      return { title: 'Novice', color: 'text-slate-400 border-slate-800 bg-slate-950' };
-    } else {
-      if (score >= 400) return { title: 'Elite / National', color: 'text-purple-400 border-purple-500/30 bg-purple-500/5' };
-      if (score >= 325) return { title: 'Excellent / Regional', color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/5' };
-      if (score >= 250) return { title: 'Advanced / Competitive', color: 'text-teal-400 border-teal-500/30 bg-teal-500/5' };
-      if (score >= 150) return { title: 'Intermediate', color: 'text-blue-400 border-blue-500/30 bg-blue-500/5' };
-      return { title: 'Novice', color: 'text-slate-400 border-slate-800 bg-slate-950' };
-    }
+    const isMale = userGender === 'male';
+    const elite = isMale ? 500 : 400;
+    const regional = isMale ? 400 : 325;
+    const comp = isMale ? 300 : 250;
+    const inter = isMale ? 200 : 150;
+
+    if (score >= elite) return { title: 'Elite / National', color: 'text-amber-700 bg-amber-500/10 border-amber-500/30 dark:text-amber-400' };
+    if (score >= regional) return { title: 'Excellent / Regional', color: 'text-amber-600 bg-amber-500/10 border-amber-500/20 dark:text-amber-300' };
+    if (score >= comp) return { title: 'Advanced / Competitive', color: 'text-amber-700 bg-amber-500/10 border-amber-500/30 dark:text-amber-400' };
+    if (score >= inter) return { title: 'Intermediate', color: 'text-amber-700 bg-amber-500/10 border-amber-500/30 dark:text-amber-400' };
+    return { title: 'Novice', color: 'text-amber-700 bg-amber-500/10 border-amber-500/30 dark:text-amber-400' };
   };
 
   const tier = getScoreTier(dotsScore, gender);
 
   return (
     <div className="bg-white dark:bg-zinc-900/60 border border-zinc-200/90 dark:border-white/10 rounded-2xl p-6 shadow-sm text-zinc-900 dark:text-zinc-50 transition-colors">
-      <div className="flex justify-between items-center border-b border-slate-800/60 pb-4 mb-4">
+      <div className="flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800/80 pb-4 mb-4">
         <div className="flex items-center gap-2">
           <div>
             <div className="flex items-center gap-1.5">
@@ -49,7 +47,7 @@ export default function RelativePerformanceCard({
               {/* 1. WEIGHT CLASS INFO TOOLTIP */}
               <div className="group relative inline-block cursor-help">
                 <svg 
-                  className="w-3.5 h-3.5 text-slate-500 hover:text-blue-400 transition-colors" 
+                  className="w-3.5 h-3.5 text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors" 
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor" 
@@ -58,13 +56,13 @@ export default function RelativePerformanceCard({
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 
-                <div className="absolute left-0 top-6 hidden group-hover:block z-50 w-56 p-3 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-                  <p className="text-[10px] uppercase font-black text-blue-400 tracking-wider mb-2">
+                <div className="absolute left-0 top-6 hidden group-hover:block z-50 w-56 p-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-xl rounded-xl shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                  <p className="text-[10px] uppercase font-black text-amber-600 dark:text-amber-400 tracking-wider mb-2">
                     Official IPF Weight Classes
                   </p>
-                  <div className="grid grid-cols-2 gap-x-4 text-[11px] font-medium leading-relaxed text-slate-400">
+                  <div className="grid grid-cols-2 gap-x-4 text-[11px] font-medium leading-relaxed text-zinc-500 dark:text-zinc-400">
                     <div>
-                      <span className="text-[10px] font-bold text-slate-500 block mb-0.5">MALE🚹</span>
+                      <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 block mb-0.5">MALE</span>
                       <p>u59kg Class</p>
                       <p>u66kg Class</p>
                       <p>u74kg Class</p>
@@ -75,7 +73,7 @@ export default function RelativePerformanceCard({
                       <p>+120kg Class</p>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-500 block mb-0.5">FEMALE🚺</span>
+                      <span className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 block mb-0.5">FEMALE</span>
                       <p>u47kg Class</p>
                       <p>u52kg Class</p>
                       <p>u57kg Class</p>
@@ -117,12 +115,12 @@ export default function RelativePerformanceCard({
       {/* RATING CLASSIFICATION BAR WITH NEW SCORE TIER TOOLTIP */}
       <div className="mt-4 p-3 bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 rounded-xl flex items-center justify-between">
         <div className="flex items-center gap-1.5">
-          <span className="text-xs text-slate-400 font-medium">Coached Rating Classification:</span>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Coached Rating Classification:</span>
           
           {/* 2. SCORE TIER INFO TOOLTIP CONTAINER */}
           <div className="group relative inline-block cursor-help">
             <svg 
-              className="w-3.5 h-3.5 text-slate-600 hover:text-blue-400 transition-colors" 
+              className="w-3.5 h-3.5 text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors" 
               fill="none" 
               viewBox="0 0 24 24" 
               stroke="currentColor" 
@@ -131,41 +129,49 @@ export default function RelativePerformanceCard({
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             
-            {/* TOOLTIP DROP PANEL REFLECTING YOUR NEW SYSTEM */}
-            <div className="absolute left-0 bottom-6 hidden group-hover:block z-50 w-72 p-3 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-150">
-              <p className="text-[10px] uppercase font-black text-blue-400 tracking-wider mb-2">
+            {/* TOOLTIP DROP PANEL */}
+            <div className="absolute left-0 bottom-6 hidden group-hover:block z-50 w-80 p-3.5 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl">
+              <p className="text-[10px] uppercase font-black text-amber-600 dark:text-amber-400 tracking-wider mb-2.5">
                 DOTS Classification Matrix
               </p>
-              <div className="text-[11px] font-medium text-slate-400 space-y-1">
-                <div className="flex justify-between font-bold text-slate-500 border-b border-slate-900 pb-0.5 mb-1 text-[10px] uppercase">
-                  <span>Tier</span>
-                  <span>Men 🚹</span>
-                  <span>Women 🚺</span>
+              
+              <div className="space-y-1.5 text-[11px] font-medium">
+                {/* Table Header */}
+                <div className="grid grid-cols-12 font-bold text-zinc-500 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-800 pb-1 text-[10px] uppercase tracking-wider">
+                  <span className="col-span-6">Tier</span>
+                  <span className="col-span-3 text-right">Men</span>
+                  <span className="col-span-3 text-right">Women</span>
                 </div>
-                <div className="flex justify-between text-purple-400">
-                  <span>Elite / National</span>
-                  <span>500+</span>
-                  <span>400+</span>
+
+                {/* Table Rows */}
+                <div className="grid grid-cols-12 items-center text-amber-600 dark:text-amber-400 font-semibold py-0.5">
+                  <span className="col-span-6 truncate">Elite / National</span>
+                  <span className="col-span-3 text-right font-mono">500+</span>
+                  <span className="col-span-3 text-right font-mono">400+</span>
                 </div>
-                <div className="flex justify-between text-emerald-400">
-                  <span>Excellent / Regional</span>
-                  <span>400 – 499</span>
-                  <span>325 – 399</span>
+
+                <div className="grid grid-cols-12 items-center text-zinc-800 dark:text-zinc-200 py-0.5">
+                  <span className="col-span-6 truncate">Excellent / Regional</span>
+                  <span className="col-span-3 text-right font-mono text-[10.5px]">400–499</span>
+                  <span className="col-span-3 text-right font-mono text-[10.5px]">325–399</span>
                 </div>
-                <div className="flex justify-between text-teal-400">
-                  <span>Advanced / Competitive</span>
-                  <span>300 – 399</span>
-                  <span>250 – 324</span>
+
+                <div className="grid grid-cols-12 items-center text-zinc-800 dark:text-zinc-200 py-0.5">
+                  <span className="col-span-6 truncate">Advanced / Competitive</span>
+                  <span className="col-span-3 text-right font-mono text-[10.5px]">300–399</span>
+                  <span className="col-span-3 text-right font-mono text-[10.5px]">250–324</span>
                 </div>
-                <div className="flex justify-between text-blue-400">
-                  <span>Intermediate</span>
-                  <span>200 – 299</span>
-                  <span>150 – 249</span>
+
+                <div className="grid grid-cols-12 items-center text-zinc-600 dark:text-zinc-400 py-0.5">
+                  <span className="col-span-6 truncate">Intermediate</span>
+                  <span className="col-span-3 text-right font-mono text-[10.5px]">200–299</span>
+                  <span className="col-span-3 text-right font-mono text-[10.5px]">150–249</span>
                 </div>
-                <div className="flex justify-between text-slate-500">
-                  <span>Novice</span>
-                  <span>&lt; 200</span>
-                  <span>&lt; 150</span>
+
+                <div className="grid grid-cols-12 items-center text-zinc-400 dark:text-zinc-500 py-0.5">
+                  <span className="col-span-6 truncate">Novice</span>
+                  <span className="col-span-3 text-right font-mono">&lt; 200</span>
+                  <span className="col-span-3 text-right font-mono">&lt; 150</span>
                 </div>
               </div>
             </div>
