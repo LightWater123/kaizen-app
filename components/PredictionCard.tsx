@@ -12,7 +12,7 @@ interface PredictionCardProps {
   isDeload?: boolean;
   unit: 'lbs' | 'kg';
   previousLift?: string | null;
-  previousDate?: string | null; // NEW: Optional date tracking string prop (e.g., "Jun 8")
+  previousDate?: string | null;
 }
 
 export default function PredictionCard({ 
@@ -29,7 +29,7 @@ export default function PredictionCard({
   const [showPlates, setShowPlates] = useState(false);
   const plates = targetWeight ? calculatePlates(targetWeight, unit) : null;
 
-  // Change card colors conditionally depending on engine status
+  // Outer container color variables
   const cardBorderColor = isDeload 
     ? 'border-amber-500/40 bg-amber-50/50 dark:bg-amber-950/10 dark:border-amber-500/30' 
     : 'border-zinc-200/90 dark:border-white/10 bg-white dark:bg-zinc-900/60';
@@ -39,14 +39,14 @@ export default function PredictionCard({
     : 'text-zinc-600 dark:text-zinc-300 font-medium';
 
   return (
-    <div className={`border rounded-2xl p-6 shadow-xl text-white flex flex-col justify-between transition-all duration-300 ${cardBorderColor} ${isDeload ? 'bg-slate-900/40' : 'bg-slate-900'}`}>
+    <div className={`border rounded-2xl p-6 shadow-sm flex flex-col justify-between transition-all duration-300 ${cardBorderColor}`}>
       <div>
         <div className="flex justify-between items-start">
-          <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
+          <h3 className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1">
             {exerciseName} Target
           </h3>
           {isDeload && (
-            <span className="text-[10px] uppercase font-black tracking-wider px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded border border-amber-500/30">
+            <span className="text-[10px] uppercase font-black tracking-wider px-2 py-0.5 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded border border-amber-500/30">
               Deload
             </span>
           )}
@@ -54,58 +54,59 @@ export default function PredictionCard({
         
         {isFirstSession ? (
           <div className="mt-2">
-            <span className="text-xl font-bold text-white-400">Engine Calibrating</span>
-            <p className="text-xs text-slate-400 mt-2 leading-relaxed">{message}</p>
+            <span className="text-xl font-bold text-zinc-900 dark:text-zinc-100">Engine Calibrating</span>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-2 leading-relaxed">{message}</p>
           </div>
         ) : (
           <div className="mt-2">
             <div>
               <span className="text-5xl font-black tracking-tight text-zinc-900 dark:text-zinc-50">
                 {targetWeight}
-                <span className="text-xl font-normal text-slate-500 ml-1">{unit}</span>
+                <span className="text-xl font-normal text-zinc-400 dark:text-zinc-500 ml-1">{unit}</span>
               </span>
-              <span className="mx-3 text-3xl font-light text-slate-700">×</span>
+              <span className="mx-3 text-3xl font-light text-zinc-400 dark:text-zinc-600">×</span>
               <span className="text-4xl font-extrabold text-amber-600 dark:text-amber-400">
                 {targetReps}
-                <span className="text-sm font-normal text-slate-500 ml-0.5"> reps</span>
+                <span className="text-sm font-normal text-zinc-400 dark:text-zinc-500 ml-0.5"> reps</span>
               </span>
             </div>
 
-            {/* UPDATED: Displays performance stats side-by-side with localized calendar date info */}
+            {/* Previous Session Badge */}
             {previousLift && (
-              <div className="mt-1.5 flex items-center gap-1.5 text-xs text-slate-400 font-medium flex-wrap">
-                <span className="text-slate-600">Last Session:</span>
-                <span className="text-slate-300 bg-slate-950 border border-slate-800 px-2 py-0.5 rounded-md font-semibold">
+              <div className="mt-2 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 font-medium flex-wrap">
+                <span className="text-zinc-400 dark:text-zinc-500">Last Session:</span>
+                <span className="text-zinc-800 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 px-2 py-0.5 rounded-md font-semibold font-mono text-[11px]">
                   {previousLift}
                 </span>
                 {previousDate && (
-                  <span className="text-[11px] text-slate-500 font-medium font-mono">
+                  <span className="text-[11px] text-zinc-400 dark:text-zinc-500 font-medium font-mono">
                     on {previousDate}
                   </span>
                 )}
               </div>
             )}
 
+            {/* REFACTORED PLATE LOADER SECTION */}
             {plates && Object.keys(plates.platesPerSide).length > 0 && (
               <div className="mt-3">
                 <button
                   type="button"
                   onClick={() => setShowPlates(!showPlates)}
-                  className="text-xs text-slate-400 hover:text-blue-400 underline underline-offset-2 transition font-semibold"
+                  className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 underline underline-offset-2 transition font-semibold cursor-pointer"
                 >
                   {showPlates ? 'Hide Plate Loader' : 'Show Plate Loading 🔍'}
                 </button>
 
                 {showPlates && (
-                  <div className="mt-2 p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1">
-                    <p className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
+                  <div className="mt-2 p-3 bg-zinc-50 dark:bg-zinc-950/80 border border-zinc-200 dark:border-zinc-800 rounded-xl space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                    <p className="text-[10px] uppercase font-bold text-zinc-400 dark:text-zinc-500 tracking-wider">
                       Plates per side ({plates.barbell}{unit} bar):
                     </p>
-                    <div className="flex flex-wrap gap-2 pt-1">
+                    <div className="flex flex-wrap gap-2 pt-0.5">
                       {Object.entries(plates.platesPerSide).map(([plate, count]) => (
                         <span 
                           key={plate} 
-                          className={`px-2.5 py-1 text-xs font-black rounded-lg bg-slate-900 border ${isDeload ? 'border-amber-900/60 text-amber-400' : 'border-blue-900/60 text-blue-400'}`}
+                          className="px-2.5 py-1 text-xs font-mono font-bold rounded-lg bg-white dark:bg-zinc-900 border border-amber-500/30 text-amber-700 dark:text-amber-400 shadow-xs"
                         >
                           {count}x {plate}{unit}
                         </span>
