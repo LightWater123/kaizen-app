@@ -6,7 +6,9 @@
 # Key Features
 
 • RPE & Load Prediction: Calculates dynamic training targets based on recent session volume, recovery, and RPE history.
+
 • Comprehensive Ledger: Detailed historical tracking for compound movements with visual trend trajectories.
+
 • Relative Strength Index: Benchmarks your big three lifts against your current body weight to scale performance tiers.
 
 <img width="1916" height="771" alt="image" src="https://github.com/user-attachments/assets/3247f605-f199-4256-9797-584a6873ead3" />
@@ -19,7 +21,7 @@
 • Frontend: Next.js, TypeScript, Tailwind CSS
 • Backend & Database: Supabase
 
-#Getting Started
+# Getting Started
 
 
 **Prerequisites**
