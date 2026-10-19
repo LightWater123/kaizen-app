@@ -16,6 +16,22 @@
 <img width="1904" height="927" alt="image" src="https://github.com/user-attachments/assets/19b0d69c-3068-4d1e-8999-e198b7f8932a" />
 
 
+# Relative Strength Tracking via DOTS
+
+To fairly evaluate strength progression across different body sizes, Kaizen implements the DOTS (Dynamic Objective Team Scoring) Coefficient. Introduced as a modern standard in powerlifting, the DOTS formula acts as a mathematical equalizer.
+Instead of just looking at raw weight lifted, the platform calculates a score by multiplying your total compound lifting volume (Squat + Bench Press + Deadlift) by a gender-specific, weight-dependent polynomial coefficient:
+<img width="476" height="98" alt="image" src="https://github.com/user-attachments/assets/b5bb83b6-71d0-4c33-a64a-35a7e92a177a" />
+
+
+**Performance Tiers Evaluated:**
+
+The platform uses this score to categorize your current physical performance tier:
+• **Elite:** 500+ points
+• **Advanced**: 400 - 500 points
+• **Intermediate**: 300 - 400 points
+• **Novice**: 200 - 300 points
+
+
 **Tech Stack**
 
 • Frontend: Next.js, TypeScript, Tailwind CSS
