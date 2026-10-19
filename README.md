@@ -9,6 +9,11 @@
 • Comprehensive Ledger: Detailed historical tracking for compound movements with visual trend trajectories.
 • Relative Strength Index: Benchmarks your big three lifts against your current body weight to scale performance tiers.
 
+<img width="1916" height="771" alt="image" src="https://github.com/user-attachments/assets/3247f605-f199-4256-9797-584a6873ead3" />
+<img width="1920" height="926" alt="image" src="https://github.com/user-attachments/assets/021423b8-a395-495d-853e-e03b54b15b64" />
+<img width="1904" height="927" alt="image" src="https://github.com/user-attachments/assets/19b0d69c-3068-4d1e-8999-e198b7f8932a" />
+
+
 **Tech Stack**
 
 • Frontend: Next.js, TypeScript, Tailwind CSS
