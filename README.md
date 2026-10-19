@@ -37,7 +37,7 @@ The platform uses this score to categorize your current physical performance tie
 
 
 
-**Tech Stack**
+# Tech Stack
 
 • Frontend: Next.js, TypeScript, Tailwind CSS
 • Backend & Database: Supabase
