@@ -27,14 +27,8 @@ Instead of just looking at raw weight lifted, the platform calculates a score by
 **Performance Tiers Evaluated:**
 
 The platform uses this score to categorize your current physical performance tier:
-• **Elite:** 500+ points
 
-• **Advanced**: 400 - 500 points
-
-• **Intermediate**: 300 - 400 points
-
-• **Novice**: 200 - 300 points
-
+<img width="337" height="220" alt="image" src="https://github.com/user-attachments/assets/d1af6f0e-9a5e-4bf5-ab14-df09d6a68e32" />
 
 
 # Tech Stack
