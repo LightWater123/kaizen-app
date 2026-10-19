@@ -45,16 +45,19 @@ Ensure you have Node.js (v18.0 or higher) installed.
 
 **Installation & Setup**
 
-1. Clone the repository:bash
+1. Clone the repository
+   
 git clone https://github.com/LightWater123/kaizen-app
 
-2. Navigate into the directory:bash
+2.  Navigate into the directory
+
 cd kaizen-app
 
 3. Install dependencies
+   
 npm install
 
-4. Run the development server:bash
+7. Run the development server:bash
 npm run dev
 
 Open http://localhost:3000 in your browser to view the application.
