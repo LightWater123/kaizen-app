@@ -14,8 +14,8 @@ interface LedgerRowProps {
     logged_at: string;
   };
   unit: 'kg' | 'lbs';
-  isChecked: boolean;              // Added: Check status parameter
-  onToggleSelect: () => void;      // Added: Selection execution callback
+  isChecked: boolean;
+  onToggleSelect: () => void;
 }
 
 export default function LedgerRow({ log, unit, isChecked, onToggleSelect }: LedgerRowProps) {
@@ -82,7 +82,7 @@ export default function LedgerRow({ log, unit, isChecked, onToggleSelect }: Ledg
   return (
     <div 
       onContextMenu={handleContextMenu}
-      className="grid grid-cols-12 gap-2 p-3 text-xs border-b border-slate-800/50 bg-slate-900/20 hover:bg-slate-900/60 items-center transition group select-none"
+      className="grid grid-cols-12 gap-2 p-3 text-xs border-b border-zinc-200 dark:border-zinc-800/60 bg-white dark:bg-zinc-900/30 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 items-center transition group select-none"
     >
       {/* 1. CHECKBOX COLUMN BLOCK */}
       <div className="col-span-1 flex items-center pl-1" onClick={(e) => e.stopPropagation()}>
@@ -90,18 +90,26 @@ export default function LedgerRow({ log, unit, isChecked, onToggleSelect }: Ledg
           type="checkbox"
           checked={isChecked}
           onChange={onToggleSelect}
-          className="w-3.5 h-3.5 rounded bg-slate-950 border border-slate-800 checked:bg-blue-500 text-blue-500 cursor-pointer accent-blue-500"
+          className="w-3.5 h-3.5 rounded bg-zinc-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 checked:bg-zinc-900 dark:checked:bg-amber-500 cursor-pointer accent-amber-500"
         />
       </div>
 
       {!isEditing ? (
         <>
-          {/* Static Spreadsheet Ledger View Adjusted column bounds */}
-          <div className="col-span-3 font-bold text-white capitalize">{log.exercise}</div>
-          <div className="col-span-2 font-mono text-slate-300">{log.weight}{unit}</div>
-          <div className="col-span-2 font-mono text-slate-300">{log.reps}</div>
-          <div className="col-span-2 font-mono text-blue-400 font-bold">@{log.rpe}</div>
-          <div className="col-span-1 font-mono text-slate-500 text-[10px]">
+          {/* Static Ledger View Row */}
+          <div className="col-span-3 font-bold text-zinc-900 dark:text-zinc-100 capitalize">
+            {log.exercise}
+          </div>
+          <div className="col-span-2 font-mono text-zinc-700 dark:text-zinc-300 font-medium">
+            {log.weight}{unit}
+          </div>
+          <div className="col-span-2 font-mono text-zinc-700 dark:text-zinc-300 font-medium">
+            {log.reps}
+          </div>
+          <div className="col-span-2 font-mono text-amber-700 dark:text-amber-400 font-bold">
+            @{log.rpe}
+          </div>
+          <div className="col-span-1 font-mono text-zinc-400 dark:text-zinc-500 text-[10px]">
             {new Date(log.logged_at).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}
           </div>
           
@@ -109,43 +117,103 @@ export default function LedgerRow({ log, unit, isChecked, onToggleSelect }: Ledg
             <button
               type="button"
               onClick={handleMobileMenuClick}
-              className="p-1 text-slate-600 hover:text-white rounded transition md:opacity-0 group-hover:opacity-100 font-bold text-sm"
+              className="p-1 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 rounded transition md:opacity-0 group-hover:opacity-100 font-bold text-sm cursor-pointer"
             >
               ⋮
             </button>
           </div>
           
           {log.notes && (
-            <div className="col-span-11 col-start-2 text-[11px] text-slate-500 italic pt-0.5">
+            <div className="col-span-11 col-start-2 text-[11px] text-zinc-500 dark:text-zinc-400 italic pt-0.5">
               &apos;{log.notes}&apos;
             </div>
           )}
         </>
       ) : (
-        /* Dynamic Inline Editor Form Row */
+        /* Dynamic Inline Editor Row */
         <form onSubmit={handleUpdateSubmit} className="col-span-11 grid grid-cols-11 gap-2 items-center">
-          <div className="col-span-3 font-bold text-slate-400 capitalize">{log.exercise}</div>
+          <div className="col-span-3 font-bold text-zinc-500 dark:text-zinc-400 capitalize">
+            {log.exercise}
+          </div>
           
-          <input type="number" name="weight" defaultValue={log.weight} step="0.5" disabled={pending} className="col-span-2 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-white font-mono font-bold focus:outline-none focus:border-blue-500" required />
-          <input type="number" name="reps" defaultValue={log.reps} disabled={pending} className="col-span-2 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-white font-mono font-bold focus:outline-none focus:border-blue-500" required />
-          <input type="number" name="rpe" defaultValue={log.rpe} step="0.5" max="10" min="5" disabled={pending} className="col-span-2 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-blue-400 font-mono font-bold focus:outline-none focus:border-blue-500" required />
-          <input type="text" name="notes" defaultValue={log.notes} placeholder="Edit note..." disabled={pending} className="col-span-1 bg-slate-950 border border-slate-800 rounded px-1.5 py-0.5 text-slate-300 focus:outline-none text-[11px]" />
+          <input 
+            type="number" 
+            name="weight" 
+            defaultValue={log.weight} 
+            step="0.5" 
+            disabled={pending} 
+            className="col-span-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded px-1.5 py-0.5 text-zinc-900 dark:text-zinc-100 font-mono font-bold focus:outline-none focus:border-amber-500" 
+            required 
+          />
+          <input 
+            type="number" 
+            name="reps" 
+            defaultValue={log.reps} 
+            disabled={pending} 
+            className="col-span-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded px-1.5 py-0.5 text-zinc-900 dark:text-zinc-100 font-mono font-bold focus:outline-none focus:border-amber-500" 
+            required 
+          />
+          <input 
+            type="number" 
+            name="rpe" 
+            defaultValue={log.rpe} 
+            step="0.5" 
+            max="10" 
+            min="5" 
+            disabled={pending} 
+            className="col-span-2 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded px-1.5 py-0.5 text-amber-700 dark:text-amber-400 font-mono font-bold focus:outline-none focus:border-amber-500" 
+            required 
+          />
+          <input 
+            type="text" 
+            name="notes" 
+            defaultValue={log.notes} 
+            placeholder="Edit note..." 
+            disabled={pending} 
+            className="col-span-1 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded px-1.5 py-0.5 text-zinc-900 dark:text-zinc-200 focus:outline-none text-[11px]" 
+          />
 
           <div className="col-span-1 flex gap-1 justify-end">
-            <button type="submit" disabled={pending} className="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded font-bold">✓</button>
-            <button type="button" onClick={() => setIsEditing(false)} disabled={pending} className="p-1 text-slate-500 hover:bg-slate-800 rounded">✕</button>
+            <button 
+              type="submit" 
+              disabled={pending} 
+              className="p-1 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded font-bold transition"
+            >
+              ✓
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setIsEditing(false)} 
+              disabled={pending} 
+              className="p-1 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded transition"
+            >
+              ✕
+            </button>
           </div>
         </form>
       )}
 
+      {/* Floating Context Menu */}
       {showMenu && (
         <div 
           ref={menuRef}
           style={{ top: `${menuPos.y}px`, left: `${menuPos.x}px` }}
-          className="fixed z-[9999] bg-slate-950 border border-slate-800 rounded-xl shadow-2xl p-1 w-32 text-[11px] text-white animate-in fade-in zoom-in-95 duration-100"
+          className="fixed z-[9999] bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-xl p-1 w-32 text-[11px] text-zinc-800 dark:text-zinc-200 animate-in fade-in zoom-in-95 duration-100"
         >
-          <button type="button" onClick={() => { setIsEditing(true); setShowMenu(false); }} className="w-full text-left p-2 hover:bg-slate-900 rounded-lg font-semibold flex items-center gap-2 transition">✏️ Edit Lift</button>
-          <button type="button" onClick={() => { handleDelete(); setShowMenu(false); }} className="w-full text-left p-2 hover:bg-red-950/40 text-red-400 rounded-lg font-semibold flex items-center gap-2 transition">🗑️ Delete Log</button>
+          <button 
+            type="button" 
+            onClick={() => { setIsEditing(true); setShowMenu(false); }} 
+            className="w-full text-left p-2 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-lg font-semibold flex items-center gap-2 transition cursor-pointer"
+          >
+            ✏️ Edit Lift
+          </button>
+          <button 
+            type="button" 
+            onClick={() => { handleDelete(); setShowMenu(false); }} 
+            className="w-full text-left p-2 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-lg font-semibold flex items-center gap-2 transition cursor-pointer"
+          >
+            🗑️ Delete Log
+          </button>
         </div>
       )}
     </div>

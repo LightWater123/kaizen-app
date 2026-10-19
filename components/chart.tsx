@@ -25,7 +25,7 @@ export function ChartContainer({
     <ChartContext.Provider value={{ config }}>
       <div
         className={cn(
-          "flex aspect-video justify-center text-xs text-slate-400 [&_.recharts-cartesian-grid-horizontal_line]:stroke-slate-800 [&_.recharts-cartesian-grid-vertical_line]:stroke-slate-800 [&_.recharts-curve_path.recharts-tooltip-cursor]:stroke-slate-800 [&_.recharts-dot]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-sector]:outline-none [&_.recharts-surface]:overflow-visible [&_.recharts-surface]:outline-none [&_.recharts-tooltip-cursor]:stroke-slate-800",
+          "flex aspect-video justify-center text-xs text-zinc-500 dark:text-zinc-400 [&_.recharts-cartesian-grid-horizontal_line]:stroke-zinc-200 dark:[&_.recharts-cartesian-grid-horizontal_line]:stroke-zinc-800/80 [&_.recharts-cartesian-grid-vertical_line]:stroke-zinc-200 dark:[&_.recharts-cartesian-grid-vertical_line]:stroke-zinc-800/80 [&_.recharts-curve_path.recharts-tooltip-cursor]:stroke-zinc-300 dark:[&_.recharts-curve_path.recharts-tooltip-cursor]:stroke-zinc-700 [&_.recharts-dot]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-sector]:outline-none [&_.recharts-surface]:overflow-visible [&_.recharts-surface]:outline-none [&_.recharts-tooltip-cursor]:stroke-zinc-300 dark:[&_.recharts-tooltip-cursor]:stroke-zinc-700",
           className
         )}
         {...props}
@@ -49,6 +49,9 @@ export const ChartTooltipContent = React.forwardRef<
     payload?: Array<{
       value: ValueType
       name: NameType
+      color?: string
+      stroke?: string
+      fill?: string
       payload: any // eslint-disable-line @typescript-eslint/no-explicit-any
     }>
     hideLabel?: boolean
@@ -61,20 +64,41 @@ export const ChartTooltipContent = React.forwardRef<
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-slate-800 bg-slate-950 p-3 shadow-md space-y-1 min-w-[120px]",
+        "rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3 shadow-xl space-y-1.5 min-w-[130px]",
         className
       )}
     >
-      {!hideLabel && (
-        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+      {!hideLabel && payload[0]?.payload?.date && (
+        <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
           {payload[0].payload.date}
         </p>
       )}
-      <div className="flex items-center gap-1.5">
-        <div className="h-2 w-2 rounded-full bg-blue-500" />
-        <p className="text-sm font-black text-slate-50">
-          {payload[0].value} <span className="text-xs font-normal text-slate-500">kgs</span>
-        </p>
+      
+      {/* Dynamic multi-line or single-line payload rendering */}
+      <div className="space-y-1">
+        {payload.map((item, index) => {
+          const strokeColor = item.color || item.stroke || item.fill || "#f59e0b"
+          const exerciseLabel = item.name ? String(item.name).toUpperCase() : ""
+
+          return (
+            <div key={index} className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-1.5">
+                <div 
+                  className="h-2 w-2 rounded-full" 
+                  style={{ backgroundColor: strokeColor }} 
+                />
+                {exerciseLabel && (
+                  <span className="text-[10px] font-bold uppercase text-zinc-500 dark:text-zinc-400">
+                    {exerciseLabel}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs font-black text-zinc-900 dark:text-zinc-50 font-mono">
+                {item.value}
+              </p>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
