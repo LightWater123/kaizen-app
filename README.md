@@ -57,7 +57,8 @@ cd kaizen-app
    
 npm install
 
-7. Run the development server:bash
+4.  Run the development server
+
 npm run dev
 
 Open http://localhost:3000 in your browser to view the application.
