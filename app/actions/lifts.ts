@@ -53,27 +53,55 @@ export async function logLift(formData: FormData) {
   revalidatePath('/dashboard')
   return { success: true, error: null }
 }
+
 /**
- * Updates an existing lift log record from the spreadsheet ledger editor
+ * Updates an existing lift log record from the spreadsheet ledger editor.
+ * `loggedAt` is optional so existing callers keep working; when provided,
+ * it must be a valid ISO timestamp.
  */
-export async function updateLiftLog(id: string, weight: number, reps: number, rpe: number, notes?: string) {
+export async function updateLiftLog(
+  id: string,
+  weight: number,
+  reps: number,
+  rpe: number,
+  notes?: string,
+  loggedAt?: string
+) {
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) throw new Error('Unauthorized operational context.')
 
+  const updates: Record<string, unknown> = {
+    weight,
+    reps,
+    rpe,
+    notes,
+  }
+
+  if (loggedAt) {
+    const parsed = new Date(loggedAt)
+    if (Number.isNaN(parsed.getTime())) {
+      throw new Error('Invalid date provided.')
+    }
+    updates.logged_at = parsed.toISOString()
+  }
+
   const { error } = await supabase
     .from('lift_logs')
-    .update({ 
-      weight, 
-      reps, 
-      rpe, 
-      notes,
-      updated_at: new Date().toISOString()
-    })
+    .update(updates)
     .eq('id', id)
+    .eq('user_id', user.id)
 
-  if (error) throw new Error(error.message)
+  if (error) {
+    // Moving a lift onto a date that already has an entry for the same exercise
+    if (error.code === '23505' || error.message?.includes('unique')) {
+      throw new Error(
+        'You already have a log for this exercise on that date. Pick a different date or edit the existing entry.'
+      )
+    }
+    throw new Error(error.message)
+  }
   
   revalidatePath('/dashboard')
 }
