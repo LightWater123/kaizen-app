@@ -2,9 +2,11 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { Flame } from 'lucide-react'
+import logo from '@/app/icon.png'
 
 interface HeaderProps {
   userEmail: string
@@ -109,9 +111,14 @@ export default function Header({
             {/* Logo & Navigation */}
             <div className="flex items-center gap-6">
               <Link href="/dashboard" className="flex items-center gap-2.5 group">
-                <span className="h-8 w-8 rounded-lg bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-950 flex items-center justify-center font-black text-xs tracking-wider shadow-sm transition group-hover:scale-105">
-                  KZ
-                </span>
+                <Image
+                  src={logo}
+                  alt="Kaizen logo"
+                  width={42}
+                  height={42}
+                  priority
+                  className="h-12 w-12 object-contain transition group-hover:scale-105"
+                />
                 <span className="font-black text-lg tracking-wider text-zinc-900 dark:text-zinc-100">
                   KAIZEN
                 </span>
