@@ -31,7 +31,7 @@ export default function Header({
   const [activeModal, setActiveModal] = useState<'none' | 'name' | 'reps'>('none')
 
   const [nameInput, setNameInput] = useState(displayName)
-  const [repsInput, setRepsInput] = useState(targetReps)
+  const [repsInput, setRepsInput] = useState(String(targetReps))
   const [isUpdating, setIsUpdating] = useState(false)
 
   const menuRef = useRef<HTMLDivElement>(null)
@@ -75,10 +75,16 @@ export default function Header({
   }
 
   const handleOpenRepsModal = () => {
-    setRepsInput(targetReps)
+    setRepsInput(String(targetReps))
     setActiveModal('reps')
     handleCloseMenu()
   }
+
+  // Validate, don't coerce: empty/invalid input stays exactly as typed
+  const parsedReps = repsInput === '' ? NaN : Number(repsInput)
+  const isRepsValid =
+    Number.isInteger(parsedReps) && parsedReps >= 1 && parsedReps <= 12
+  const showRepsError = repsInput !== '' && !isRepsValid
 
   const handleUpdateProfile = async (
     field: 'display_name' | 'target_reps',
@@ -324,7 +330,7 @@ export default function Header({
             <form
               onSubmit={(e) => {
                 e.preventDefault()
-                handleUpdateProfile('target_reps', Number(repsInput))
+                if (isRepsValid) handleUpdateProfile('target_reps', parsedReps)
               }}
               className="space-y-4"
             >
@@ -333,14 +339,20 @@ export default function Header({
                   Target Reps (1 - 12)
                 </label>
                 <input
-                  type="number"
-                  min={1}
-                  max={12}
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  autoFocus
                   value={repsInput}
-                  onChange={(e) => setRepsInput(Math.max(1, Math.min(12, Number(e.target.value))))}
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-amber-500 font-bold"
-                  required
+                  onChange={(e) => setRepsInput(e.target.value.replace(/\D/g, '').slice(0, 2))}
+                  aria-invalid={showRepsError}
+                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-amber-500 font-bold aria-[invalid=true]:border-rose-500"
                 />
+                {showRepsError && (
+                  <p className="mt-1 text-xs text-rose-600 dark:text-rose-400">
+                    Enter a whole number from 1 to 12.
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">
@@ -353,7 +365,7 @@ export default function Header({
                 </button>
                 <button
                   type="submit"
-                  disabled={isUpdating}
+                  disabled={isUpdating || !isRepsValid}
                   className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-amber-600 hover:bg-amber-500 text-white rounded-xl transition disabled:opacity-50 cursor-pointer"
                 >
                   {isUpdating ? 'Saving...' : 'Save'}
