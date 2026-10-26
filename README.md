@@ -3,7 +3,7 @@
 
 **Kaizen** is a smart analytics platform engineered to eliminate guesswork from progressive overload. Built for continuous progression, it tracks, analyzes, and predicts your training metrics to optimize your strength journey. A web app for powerlifters, aspiring powerlifters, powerbuilders, or just people who want to track their SBD progression.
 
-link: kaizen-app-p2b6.vercel.app
+link: [kaizen-app-p2b6.vercel.app](url)
 
 # Key Features
 
